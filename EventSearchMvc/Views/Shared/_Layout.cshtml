@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/jquery-2.2.3.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.11.4.min.js"></script>
+</head>
+<body>
+
+
+    <script type="text/javascript">
+        $(function () {
+            $('#StartDatepicker').datepicker();
+            $('#EndDatepicker').datepicker();
+        });
+
+        $(function () {
+            $('#search').bind("click", function () {
+                $('#spinner').show();
+                //$('input#StartDatepicker').UpdateDateStatus({ start: $('input#StartDatepicker').val(), end: $('input#EndDatepicker').val() });
+            });
+        });
+        $(".refresh").bind("click", function () {
+            $('#spinner').fadeIn();
+        });
+
+    </script>
+
+    <div class="navbar">
+        <div class="col-sm-12">
+            @using (Ajax.BeginForm("Index", "Search", null, new AjaxOptions
+            {
+                HttpMethod = "GET",
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "SearchResult"
+
+            }))
+            {
+
+                <input type="text" placeholder="Location" class="col-sm-2 form-control btn-long" name="location" />
+                <input type="text" placeholder="Category" class="col-sm-2 form-control btn-long" name="category" />
+
+                <div class="input-group">
+                    <label for="startDate" class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </label>
+                    <input id="startDate" type="text" placeholder="Start Date" class="date-picker form-control" name="startDate" />
+                </div>
+
+
+                <div class="input-group">
+                    <label for="endDate" class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </label>
+                    <input id="endDate" type="text" placeholder="End Date" class="date-picker form-control" name="endDate" />
+                </div>
+
+                <input id="search" class="btn btn-block btn-info" type="submit" value="Search" />
+            }
+        </div>
+
+    </div>
+
+
+    <div class="container body-content">
+        <div id="spinner" class="spinner" style="display: none;">
+            <img id="img-spinner" src="~/Images/ajax_loader.gif" alt="Loading" />
+        </div>
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Search Events from <a href="http://api.eventful.com/">eventful.com</a></p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
