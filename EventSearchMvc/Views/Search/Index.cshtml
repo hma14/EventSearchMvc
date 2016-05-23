@@ -5,77 +5,75 @@
     ViewBag.Title = "Search";
 }
 
-<div class="col-lg-12">
-    <div id="SearchResult">
+<div id="SearchResult col-lg-12">
 
-        <table class="table table-striped table-responsive">
+    <table class="table table-striped table-responsive">
+        <tr>
+            <th>Title</th>
+            <th>Performers</th>
+            <th>Image</th>
+            <th>Start Datetime</th>
+            <th>Location</th>
+        </tr>
+        @foreach (var ev in ViewBag.Model)
+        {
             <tr>
-                <th>Title</th>
-                <th>Performers</th>
-                <th>Image</th>
-                <th>Start Datetime</th>
-                <th>Location</th>
+                <td>@ev.Title</td>
+                <td>
+                    @{
+                        if (ev.Performers != null)
+                        {
+                            foreach (var perfs in ev.Performers.Values)
+                            {
+                                if (perfs.Count> 0)
+                                {
+                                    <ul>
+                                        @foreach (var p in perfs)
+                                        {
+                                            <li>
+                                                @p["name"];
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    @perfs["name"];
+                                }
+                            }
+                        }
+                    }
+                </td>
+                <td>
+                    @{
+                        if (@ev.Image != null)
+                        {
+                            var imageDic = ev.Image["thumb"].ToObject<Dictionary<string, JToken>>();
+                            var images = imageDic.Values;
+
+                            foreach (var image in images)
+                            {
+                                if (image.ToString().Contains("http"))
+                                {
+                                    <img src=@image />
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                </td>
+                <td>@ev.StartDatetime</td>
+                <td>@ev.Location</td>
             </tr>
-            @foreach (var ev in ViewBag.Model)
-            {
-                <tr>
-                    <td>@ev.Title</td>
-                    <td>
-                        @{
-                            if (ev.Performers != null)
-                            {
-                                foreach (var perfs in ev.Performers.Values)
-                                {
-                                    if (perfs.Count> 0)
-                                    {
-                                        <ul>
-                                            @foreach (var p in perfs)
-                                            {
-                                                <li>
-                                                    @p["name"];
-                                                </li>
-                                            }
-                                        </ul>
-                                    }
-                                    else
-                                    {
-                                        @perfs["name"];
-                                    }
-                                }
-                            }
-                        }
-                    </td>
-                    <td>
-                        @{
-                            if (@ev.Image != null)
-                            {
-                                var imageDic = ev.Image["thumb"].ToObject<Dictionary<string, JToken>>();
-                                var images = imageDic.Values;
+        }
 
-                                foreach (var image in images)
-                                {
-                                    if (image.ToString().Contains("http"))
-                                    {
-                            <img src=@image />
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    </td>
-                    <td>@ev.StartDatetime</td>
-                    <td>@ev.Location</td>
-                </tr>
-            }
+    </table>
+    <div class="pager" style="font-size: .7em; margin-top: -5px;">
+        @*Page @(ViewBag.Model.PageCount < ViewBag.Model.PageNumber ? 0 : ViewBag.Model.PageNumber) of @ViewBag.Model.PageCount*@
 
-        </table>
-        <div class="pager" style="font-size: .7em; margin-top: -5px;">
-            Page @(ViewBag.Model.PageCount < ViewBag.Model.PageNumber ? 0 : ViewBag.Model.PageNumber) of @ViewBag.Model.PageCount
+        @Html.PagedListPager(ViewBag.Model as PagedList.IPagedList<EventSearchMvc.Models.Events>, page => Url.Action("Index", "Search", new { page, sortOrder = ViewBag.CurrentSort }),
+                                PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions() { DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded }
+                                    , new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "SearchResult" }))
 
-            @Html.PagedListPager(ViewBag.Model as PagedList.IPagedList<EventSearchMvc.Models.Events>, page => Url.Action("Index", "Search", new { page, sortOrder = ViewBag.CurrentSort }),
-                                 PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions() { DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded }
-                                      , new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "SearchResult" }))
-
-        </div>
     </div>
 </div>
