@@ -8,30 +8,25 @@
     @Scripts.Render("~/bundles/modernizr")
     <script src="~/Scripts/jquery-2.2.3.min.js"></script>
     <script src="~/Scripts/jquery-ui-1.11.4.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/MyScripts/app.js"></script>
 </head>
-<body>
+<body >
 
 
     <script type="text/javascript">
-        $(function () {
-            $('#StartDatepicker').datepicker();
-            $('#EndDatepicker').datepicker();
-        });
 
         $(function () {
             $('#search').bind("click", function () {
                 $('#spinner').show();
-                //$('input#StartDatepicker').UpdateDateStatus({ start: $('input#StartDatepicker').val(), end: $('input#EndDatepicker').val() });
+                //$('input#StartDatepicker').UpdateDateStatus({ start: $('input#startDate').val(), end: $('input#endDate').val() });
             });
-        });
-        $(".refresh").bind("click", function () {
-            $('#spinner').fadeIn();
         });
 
     </script>
 
     <div class="navbar">
-        <div class="col-sm-12">
+        <div class="col-sm-12" ng-app="App" ng-controller="AppController" ng-init="init(location, category, startDate, endDate)" >
             @using (Ajax.BeginForm("Index", "Search", null, new AjaxOptions
             {
                 HttpMethod = "GET",
@@ -41,14 +36,14 @@
             }))
             {
 
-                <input type="text" placeholder="Location" class="col-sm-2 form-control btn-long" name="location" />
-                <input type="text" placeholder="Category" class="col-sm-2 form-control btn-long" name="category" />
+                <input type="text" placeholder="Location" class="col-sm-2 form-control btn-long" name="location" ng-model="location" />
+                <input type="text" placeholder="Category" class="col-sm-2 form-control btn-long" name="category" ng-model="category" />
 
                 <div class="input-group">
                     <label for="startDate" class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </label>
-                    <input id="startDate" type="text" placeholder="Start Date" class="date-picker form-control" name="startDate" />
+                    <input id="startDate" type="text" placeholder="Start Date" class="date-picker form-control" name="startDate" ng-model="startDate" />
                 </div>
 
 
@@ -56,10 +51,10 @@
                     <label for="endDate" class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </label>
-                    <input id="endDate" type="text" placeholder="End Date" class="date-picker form-control" name="endDate" />
+                    <input id="endDate" type="text" placeholder="End Date" class="date-picker form-control" name="endDate" ng-model="endDate" />
                 </div>
 
-                <input id="search" class="btn btn-block btn-info" type="submit" value="Search" />
+                <input id="search" class="btn btn-block btn-info" type="submit"  value="Search" />
             }
         </div>
 
