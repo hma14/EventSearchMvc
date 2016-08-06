@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 
 namespace EventSearchMvc.Controllers
 {
@@ -80,25 +81,35 @@ namespace EventSearchMvc.Controllers
             }
 
             JObject jobject = JObject.Parse(json);
-            var evts = jobject["events"]["event"];
-
-            IList<Events> events = new List<Events>();
-            foreach (var ev in evts)
+            if (jobject["events"].HasValues)
             {
-                Events e = new Events
-                {
+                var evts = jobject["events"]["event"];
 
-                    Title = (string)ev["title"],
-                    Performers = ev["performers"] != null ? ev["performers"].ToObject<Dictionary<string, JToken>>() : null,
-                    Image = ev["image"] != null ? ev["image"].ToObject<Dictionary<string, JToken>>() : null,
-                    StartDatetime = (DateTime)ev["start_time"],
-                    Location = (string)ev["venue_address"] + ", " + (string)ev["city_name"] + ", " + (string)ev["region_abbr"] + ", " + (string)ev["country_name"],
-                };
-                events.Add(e);
+                IList<Events> events = new List<Events>();
+                foreach (var ev in evts)
+                {
+                    Events e = new Events
+                    {
+
+                        Title = (string) ev["title"],
+                        Performers =
+                            ev["performers"].HasValues ? ev["performers"].ToObject<Dictionary<string, JToken>>() : null,
+                        Image = ev["image"].HasValues ? ev["image"].ToObject<Dictionary<string, JToken>>() : null,
+                        StartDatetime = (DateTime) ev["start_time"],
+                        Location =
+                            (string) ev["venue_address"] + ", " + (string) ev["city_name"] + ", " +
+                            (string) ev["region_abbr"] + ", " + (string) ev["country_name"],
+                    };
+                    events.Add(e);
+                }
+                ViewBag.CurrentSort = "start_time";
+
+                ViewBag.Model = events.ToPagedList(Page, page_size);
+
+                return View();
             }
-            ViewBag.CurrentSort = "start_time";
-            ViewBag.Model = events.ToPagedList(Page, page_size);
-            return View(ViewBag.Model);
+            HandleErrorInfo error = new HandleErrorInfo(new Exception("Found nothing"), "Search",  "Index");
+            return View("_Error", error);
         }
 
     }
