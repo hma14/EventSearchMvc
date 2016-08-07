@@ -80,6 +80,7 @@ namespace EventSearchMvc.Controllers
                 json = (string) DataCache.GetCachedObject("CachedData");
             }
 
+
             JObject jobject = JObject.Parse(json);
             if (jobject["events"].HasValues)
             {
